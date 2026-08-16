@@ -22,7 +22,7 @@ export function ResultPanel({
   return (
     <section className="result-panel" aria-live="polite" aria-atomic="true">
       <div className="result-header">
-        <h2 className="result-title">AccessLens says</h2>
+        <h2 className="result-title">ANVAYA says</h2>
         {result && (
           <div className="result-actions">
             <button

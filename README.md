@@ -1,8 +1,8 @@
-# AccessLens AI
+# ANVAYA
 
 Multimodal accessibility copilot for Prasunethon 2.0 — **See → Understand → Explain → Alert**.
 
-Point a camera at a document, sign, object, or environment. AccessLens uses Gemini multimodal vision to return clear, prioritized text and spoken guidance.
+Point a camera at a document, sign, object, or environment. ANVAYA uses Gemini multimodal vision to return clear, prioritized text and spoken guidance.
 
 ## Stack
 
@@ -91,7 +91,7 @@ Response:
 ```text
 P31_ANVAYA/
   backend/app/     # FastAPI + Gemini pipeline
-  frontend/        # Next.js AccessLens UI
+  frontend/        # Next.js ANVAYA UI
   README.md
   .env.example     # root pointer to backend key
 ```

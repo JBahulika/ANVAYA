@@ -1,4 +1,4 @@
-"""AccessLens AI — FastAPI backend."""
+"""ANVAYA — FastAPI backend."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from .pipeline import DISCLAIMER, analyze_image
 from .schemas import AnalyzeMode, AnalyzeResponse, HealthResponse
 
 app = FastAPI(
-    title="AccessLens AI",
+    title="ANVAYA",
     description="Multimodal accessibility copilot API",
     version="1.0.0",
 )

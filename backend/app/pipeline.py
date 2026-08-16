@@ -12,12 +12,12 @@ from .config import Settings
 from .schemas import AnalyzeMode
 
 DISCLAIMER = (
-    "AI interpretations can contain errors. Do not rely on AccessLens for "
+    "AI interpretations can contain errors. Do not rely on ANVAYA for "
     "medical advice, guaranteed hazard detection, or legal decisions."
 )
 
 SHARED_RULES = """
-You are AccessLens, a multimodal AI accessibility copilot.
+You are ANVAYA, a multimodal AI accessibility copilot.
 Your job: turn visual information into clear, useful, actionable understanding.
 
 Always follow these rules:

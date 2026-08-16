@@ -104,8 +104,8 @@ export default function HomePage() {
   return (
     <main className="shell">
       <header className="hero">
-        <p className="eyebrow">ANVAYA · Prasunethon 2.0</p>
-        <h1 className="brand">AccessLens</h1>
+        <p className="eyebrow">Prasunethon 2.0 · Accessibility Copilot</p>
+        <h1 className="brand">ANVAYA</h1>
         <p className="tagline">
           Point. Understand. Act. — a multimodal accessibility copilot for the
           visual world.
@@ -145,7 +145,7 @@ export default function HomePage() {
               placeholder={
                 needsQuestion
                   ? "e.g. What is the total amount due?"
-                  : "Optional context for AccessLens"
+                  : "Optional context for ANVAYA"
               }
               disabled={loading}
               aria-required={needsQuestion}
@@ -193,7 +193,7 @@ export default function HomePage() {
       </div>
 
       <footer className="safety-footer">
-        AccessLens can misread images. It is not medical advice and not a
+        ANVAYA can misread images. It is not medical advice and not a
         guaranteed safety system. Images are processed ephemerally and not stored
         by the MVP backend.
       </footer>

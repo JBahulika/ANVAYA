@@ -15,9 +15,9 @@ const sans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "AccessLens AI — Multimodal Accessibility Copilot",
+  title: "ANVAYA — Multimodal Accessibility Copilot",
   description:
-    "Point your camera at documents, signs, objects, or surroundings. AccessLens sees, understands, explains, and alerts.",
+    "Point your camera at documents, signs, objects, or surroundings. ANVAYA sees, understands, explains, and alerts.",
 };
 
 export default function RootLayout({
