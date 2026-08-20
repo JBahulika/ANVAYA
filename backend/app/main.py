@@ -43,7 +43,7 @@ def health() -> HealthResponse:
 @app.post("/analyze", response_model=AnalyzeResponse)
 async def analyze(
     image: UploadFile = File(..., description="Captured or uploaded image"),
-    mode: AnalyzeMode = Form(AnalyzeMode.simple),
+    mode: AnalyzeMode = Form(AnalyzeMode.auto),
     question: Optional[str] = Form(None),
 ) -> AnalyzeResponse:
     cfg = get_settings()
@@ -74,7 +74,7 @@ async def analyze(
         )
 
     try:
-        text, confidence_note = analyze_image(
+        text, confidence_note, aim_hint, aim_instruction = analyze_image(
             settings=cfg,
             image_bytes=data,
             mode=mode,
@@ -94,6 +94,8 @@ async def analyze(
     return AnalyzeResponse(
         text=text,
         mode=mode,
+        aim_hint=aim_hint,
+        aim_instruction=aim_instruction,
         confidence_note=confidence_note,
         disclaimer=DISCLAIMER,
     )

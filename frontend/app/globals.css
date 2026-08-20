@@ -57,15 +57,15 @@ body {
 .shell {
   width: min(960px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 1.5rem 0 3rem;
+  padding: 1rem 0 calc(2rem + env(safe-area-inset-bottom, 0px));
 }
 
 .hero {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.85rem;
 }
 
-.eyebrow {
-  margin: 0 0 0.35rem;
+.brand-kicker {
+  margin: 0 0 0.2rem;
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -76,18 +76,10 @@ body {
 .brand {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.6rem, 8vw, 4.2rem);
-  line-height: 1.05;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--bg-deep);
-}
-
-.tagline {
-  margin: 0.65rem 0 0;
-  max-width: 36rem;
-  font-size: 1.15rem;
-  line-height: 1.45;
-  color: var(--ink-muted);
 }
 
 .banner {
@@ -121,7 +113,7 @@ body {
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--bg-deep);
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   min-height: 220px;
 }
 
@@ -148,6 +140,10 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
+}
+
+.capture-actions .btn {
+  min-height: 44px;
 }
 
 .preview {
@@ -193,12 +189,14 @@ body {
   display: grid;
   gap: 0.15rem;
   text-align: left;
+  min-height: 44px;
   padding: 0.7rem 0.75rem;
   border-radius: 14px;
   border: 2px solid var(--border);
   background: #fff;
   color: var(--ink);
   cursor: pointer;
+  touch-action: manipulation;
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
 
@@ -252,13 +250,15 @@ body {
 
 .ask-input:focus,
 .mode-chip:focus-visible,
-.btn:focus-visible {
+.btn:focus-visible,
+.more-summary:focus-visible,
+.about summary:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--focus) 55%, white);
   outline-offset: 2px;
 }
 
 .btn {
-  min-height: 3rem;
+  min-height: 44px;
   padding: 0.65rem 1.1rem;
   border-radius: 12px;
   border: 2px solid transparent;
@@ -266,6 +266,7 @@ body {
   font-weight: 700;
   font-size: 1.05rem;
   cursor: pointer;
+  touch-action: manipulation;
   transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
@@ -299,16 +300,72 @@ body {
   border-color: transparent;
 }
 
-.btn-analyze {
+.btn-talk {
   width: 100%;
-  min-height: 3.4rem;
-  font-size: 1.2rem;
-  background: var(--bg-deep);
-  color: #f2faf7;
+  min-height: 4.25rem;
+  font-size: 1.4rem;
+  background: var(--accent);
+  color: #f4fffb;
 }
 
-.btn-analyze:hover:not(:disabled) {
-  background: #16383d;
+.btn-talk:hover:not(:disabled) {
+  background: var(--accent-strong);
+}
+
+.btn-talk.is-active {
+  background: var(--bg-deep);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, #7dcec0 55%, transparent);
+}
+
+.btn-hear-again {
+  width: 100%;
+}
+
+.session-status {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-strong) 80%, white);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.talk-hint {
+  margin: -0.35rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+.more-options {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 0.35rem 0.85rem 0.85rem;
+}
+
+.more-summary {
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.more-body {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.35rem;
+}
+
+.voice-confirm {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, white);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, white);
+  font-weight: 600;
 }
 
 .result-panel {
@@ -392,12 +449,27 @@ body {
 .safety-footer {
   margin-top: 1.25rem;
   padding: 0 0.25rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.about summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.about p {
+  margin: 0.35rem 0 0;
+  color: var(--ink-muted);
 }
 
 @media (max-width: 640px) {
   .shell {
     width: min(100% - 1rem, 960px);
-    padding-top: 1rem;
+    padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
   }
 
   .ask-controls {
@@ -406,5 +478,14 @@ body {
 
   .capture-actions .btn {
     flex: 1 1 auto;
+  }
+
+  .mode-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .viewfinder {
+    aspect-ratio: 3 / 4;
+    min-height: 280px;
   }
 }

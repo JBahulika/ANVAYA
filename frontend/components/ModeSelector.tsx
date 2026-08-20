@@ -3,11 +3,12 @@
 import type { AnalyzeMode } from "@/lib/api";
 
 const MODES: { id: AnalyzeMode; label: string; hint: string }[] = [
+  { id: "auto", label: "Auto", hint: "Pick the job for me" },
+  { id: "read", label: "Read", hint: "Extract text" },
+  { id: "alert", label: "Alert", hint: "Hazards first" },
+  { id: "ask", label: "Ask", hint: "Answer a question" },
   { id: "simple", label: "Simple", hint: "Short answer" },
   { id: "detailed", label: "Detailed", hint: "More context" },
-  { id: "alert", label: "Alert", hint: "Hazards first" },
-  { id: "read", label: "Read", hint: "Extract text" },
-  { id: "ask", label: "Ask", hint: "Answer a question" },
   { id: "explain", label: "Explain", hint: "Help me understand" },
   { id: "simplify", label: "Simplify", hint: "Plain language" },
 ];
@@ -21,7 +22,7 @@ type ModeSelectorProps = {
 export function ModeSelector({ value, onChange, disabled }: ModeSelectorProps) {
   return (
     <fieldset className="mode-selector" disabled={disabled}>
-      <legend className="mode-legend">Accessibility mode</legend>
+      <legend className="mode-legend">Mode</legend>
       <div className="mode-grid" role="radiogroup" aria-label="Accessibility mode">
         {MODES.map((mode) => {
           const selected = value === mode.id;

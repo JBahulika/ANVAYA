@@ -1,4 +1,5 @@
 export type AnalyzeMode =
+  | "auto"
   | "simple"
   | "detailed"
   | "alert"
@@ -7,12 +8,32 @@ export type AnalyzeMode =
   | "explain"
   | "simplify";
 
+export type AimHint =
+  | "ok"
+  | "move_closer"
+  | "more_light"
+  | "hold_still"
+  | "no_subject";
+
 export type AnalyzeResponse = {
   text: string;
   mode: AnalyzeMode;
+  aim_hint?: AimHint;
+  aim_instruction?: string | null;
   confidence_note: string | null;
   disclaimer: string;
 };
+
+export function spokenAnswer(result: AnalyzeResponse): string {
+  const parts: string[] = [];
+  if (result.aim_hint && result.aim_hint !== "ok" && result.aim_instruction) {
+    parts.push(result.aim_instruction);
+  }
+  if (result.text.trim()) {
+    parts.push(result.text.trim());
+  }
+  return parts.join(" ");
+}
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:8000";

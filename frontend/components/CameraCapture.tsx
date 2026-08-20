@@ -1,24 +1,52 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type Ref,
+} from "react";
+
+export type CameraHandle = {
+  capture: () => Promise<{ blob: Blob; url: string } | null>;
+};
 
 type CameraCaptureProps = {
   onCapture: (blob: Blob, previewUrl: string) => void;
+  onUpload: (blob: Blob, previewUrl: string) => void;
+  onReadyChange?: (ready: boolean) => void;
   disabled?: boolean;
+  ref?: Ref<CameraHandle>;
 };
 
-export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
+export function CameraCapture({
+  onCapture,
+  onUpload,
+  onReadyChange,
+  disabled,
+  ref,
+}: CameraCaptureProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
 
+  const setReady = useCallback(
+    (ready: boolean) => {
+      setCameraReady(ready);
+      onReadyChange?.(ready);
+    },
+    [onReadyChange]
+  );
+
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
-    setCameraReady(false);
-  }, []);
+    setReady(false);
+  }, [setReady]);
 
   const startCamera = useCallback(async () => {
     setCameraError(null);
@@ -32,15 +60,15 @@ export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
-        setCameraReady(true);
+        setReady(true);
       }
     } catch {
       setCameraError(
         "Camera unavailable. You can still upload an image below."
       );
-      setCameraReady(false);
+      setReady(false);
     }
-  }, [stopCamera]);
+  }, [setReady, stopCamera]);
 
   useEffect(() => {
     void startCamera();
@@ -49,40 +77,43 @@ export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
 
   const captureFrame = useCallback(async () => {
     const video = videoRef.current;
-    if (!video || !cameraReady) return;
+    if (!video || !cameraReady) return null;
 
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth || 1280;
     canvas.height = video.videoHeight || 720;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return null;
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, "image/jpeg", 0.92)
     );
-    if (!blob) return;
+    if (!blob) return null;
     const url = URL.createObjectURL(blob);
     onCapture(blob, url);
+    return { blob, url };
   }, [cameraReady, onCapture]);
+
+  useImperativeHandle(ref, () => ({ capture: captureFrame }), [captureFrame]);
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
-    onCapture(file, url);
+    onUpload(file, url);
     event.target.value = "";
   };
 
   return (
-    <section className="capture" aria-label="Camera and image capture">
+    <section className="capture" aria-label="Camera">
       <div className="viewfinder">
         <video
           ref={videoRef}
           className="viewfinder-video"
           playsInline
           muted
-          aria-label="Live camera preview"
+          aria-hidden="true"
         />
         {!cameraReady && (
           <div className="viewfinder-overlay" role="status">
@@ -92,15 +123,6 @@ export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
       </div>
 
       <div className="capture-actions">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => void captureFrame()}
-          disabled={disabled || !cameraReady}
-          aria-label="Capture photo from camera"
-        >
-          Capture
-        </button>
         <button
           type="button"
           className="btn btn-secondary"

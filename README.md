@@ -17,12 +17,16 @@ A multimodal accessibility copilot for **Prasunethon 2.0**. Point a camera at a 
 
 Most vision apps dump every object in a photo. ANVAYA asks a different question: **what does this person actually need to know right now?**
 
-| You point at… | You pick a mode | You get… |
+**Voice-first:** tap **Talk to ANVAYA** once, then speak. The camera captures automatically.
+
+| You say… | Agent | You get… |
 |---|---|---|
-| An electricity bill | **Read** | Amount due + deadline, spoken first |
-| Dense form language | **Simplify** | First / then / finally |
-| Stairs or a hallway | **Alert** | Hazards first — then one useful cue |
-| Anything | **Ask** + Mic | An answer to *your* question |
+| “Read this” | **Reader** | Amounts, dates, warnings from text — spoken first |
+| “What’s in front of me” | **Scene** | Hazard, clock-face, one action |
+| “Ask, what is the due date?” | **Ask** | Answer from the photo only |
+| “Help” / “Stop” | — | Command list / end session |
+
+**Capture & hear** remains the silent fallback if the mic fails. More options still expose every backend mode for demos.
 
 Images stay in memory on the backend. They are never written to disk. The Gemini API key never leaves the server.
 
@@ -32,36 +36,46 @@ Images stay in memory on the backend. They are never written to disk. The Gemini
 
 ```mermaid
 flowchart LR
-  U[You] --> C[Camera or upload]
-  U --> M[Mic — optional]
-  C --> N[Next.js]
-  M --> N
-  N -->|multipart image + mode + question| F[FastAPI]
-  F -->|bytes in RAM only| G[Gemini 2.5 Flash]
-  G --> F
-  F -->|JSON text| N
-  N --> T[On-screen answer]
-  N --> S[Browser TTS speaks it]
+  tap[Talk to ANVAYA] --> listen[Listen for command]
+  listen --> parse[Map speech to agent]
+  parse --> shoot[Auto capture]
+  shoot --> api[POST /analyze]
+  api --> speak[Speak answer]
+  speak --> listen
 ```
 
-1. Capture or upload a photo.
-2. Choose a mode (or speak a question — ANVAYA switches to **Ask**).
-3. Hit **Analyze**. FastAPI sends the image + a mode-specific prompt to Gemini.
-4. The answer appears in large type **and** is spoken automatically (Chrome recommended).
+1. Tap **Talk to ANVAYA** (browser needs one gesture for mic + camera).
+2. Say **read this**, **what’s in front of me**, or **ask …**. ANVAYA maps that to Reader / Scene / Ask, captures, and speaks.
+3. If the photo is dark, blurry, or off-frame, you hear how to recapture — then whatever could still be read.
+4. Say **repeat**, **help**, or **stop**. Mic pauses while TTS speaks so the agent does not hear itself.
+
+Chrome is recommended for speech recognition. Safari may be weaker on the mic.
 
 ---
 
-## Seven accessibility modes
+## Voice agents
 
-Same photo. Different job. Prompts change with the mode — this is not one generic caption.
+| Say this | Agent | Backend mode |
+|---|---|---|
+| read this / what does this say | Reader | `read` |
+| what’s in front of me / look around / is it safe | Scene | `alert` |
+| ask, … / what is … | Ask | `ask` |
+| help | — | spoken command list |
+| repeat | — | replay last answer |
+| stop / goodbye | — | end session |
+
+## Accessibility modes (More options)
+
+Same photo. Different job. The voice path uses Reader / Scene / Ask. Full modes stay behind **More options** for the demo.
 
 | Mode | When to use it |
 |---|---|
+| **Auto** | Documents → Read; hallways/stairs → Alert |
+| **Read** | Extract / summarize visible text (amounts, dates, warnings first) |
+| **Alert** | Hazard, clock-face + distance, one next action |
+| **Ask** | Answer a question about the image — only from what is visible |
 | **Simple** | Short answer — what it is, plus the one useful fact |
 | **Detailed** | More context, still readable aloud |
-| **Alert** | Hazards and urgent cues first |
-| **Read** | Extract / summarize visible text (amounts, dates, warnings first) |
-| **Ask** | Answer a question about the image — only from what is visible |
 | **Explain** | Help you understand a form, sign, or object |
 | **Simplify** | Plain-language rewrite, step by step |
 
@@ -105,10 +119,12 @@ Open [http://localhost:3000](http://localhost:3000). Allow camera + mic when the
 
 ## 90-second demo
 
-1. **Bill** — Upload an electricity bill → **Read** → Analyze → hear amount + deadline.
-2. **Plain language** — Same image → **Simplify** (or **Explain** + “What do I have to do?”).
-3. **Environment** — Capture stairs / a hallway → **Alert**.
-4. **Voice loop** — **Ask** → Mic → “What does this say?” → Analyze → spoken answer.
+1. Tap **Talk to ANVAYA** → allow mic.
+2. Point at a bill → say **“Read this”** → hear amount + deadline.
+3. Point at stairs / a hallway (standing still) → say **“What’s in front of me”** → clock-face Alert + “This can miss things.”
+4. Say **“Stop.”** Optional: More options → **Simplify** → **Hear this photo again** for plain language on the same bill.
+
+Use **Capture & hear** if the mic fails. Chrome works best. Do not demo street crossing or a subway platform as a safety system.
 
 ---
 
@@ -119,17 +135,21 @@ Open [http://localhost:3000](http://localhost:3000). Allow camera + mic when the
 | Field | What it is |
 |---|---|
 | `image` | JPEG / PNG / WebP / GIF (max **8 MB**) |
-| `mode` | `simple` \| `detailed` \| `alert` \| `read` \| `ask` \| `explain` \| `simplify` |
+| `mode` | `auto` \| `simple` \| `detailed` \| `alert` \| `read` \| `ask` \| `explain` \| `simplify` |
 | `question` | optional |
 
 ```json
 {
   "text": "Your electricity bill is due on 12 March. Amount: ₹2,450.",
-  "mode": "read",
+  "mode": "auto",
+  "aim_hint": "ok",
+  "aim_instruction": null,
   "confidence_note": null,
-  "disclaimer": "AI interpretations can contain errors…"
+  "disclaimer": "Photo is processed and not stored. Not medical advice. Not a safety system."
 }
 ```
+
+`aim_hint` is `ok`, `move_closer`, `more_light`, `hold_still`, or `no_subject`.
 
 `GET /health` reports whether `GEMINI_API_KEY` is configured.
 
@@ -149,7 +169,7 @@ Open [http://localhost:3000](http://localhost:3000). Allow camera + mic when the
 ```text
 ANVAYA/
   backend/app/     FastAPI + Gemini pipeline (mode-specific prompts)
-  frontend/        Next.js camera, modes, and Web Speech loop
+  frontend/        Next.js Talk session, camera, Web Speech agents
   docs/            Hackathon pitch deck
 ```
 
@@ -158,9 +178,9 @@ ANVAYA/
 
 | Layer | Tech |
 |---|---|
-| Frontend | Next.js 15 (App Router), React 19, browser camera + Web Speech API |
+| Frontend | Next.js 15 (App Router), React 19, camera + Web Speech voice agents |
 | Backend | FastAPI, Pydantic |
 | AI | Google Gemini multimodal (`gemini-2.5-flash`), `google-genai` |
-| Voice | Browser `SpeechRecognition` + `speechSynthesis` — no extra library |
+| Voice | Browser `SpeechRecognition` + `speechSynthesis` — keyword agents, no extra library |
 
 </details>

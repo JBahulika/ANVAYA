@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
@@ -14,10 +14,27 @@ const sans = Source_Sans_3({
   weight: ["400", "500", "600", "700"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0f2a2e",
+};
+
 export const metadata: Metadata = {
-  title: "ANVAYA — Multimodal Accessibility Copilot",
+  title: "ANVAYA — Talk",
   description:
-    "Point your camera at documents, signs, objects, or surroundings. ANVAYA sees, understands, explains, and alerts.",
+    "Talk to ANVAYA. Say read this or what's in front of me. The camera captures and speaks what you need.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "ANVAYA",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

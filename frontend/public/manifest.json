@@ -1,0 +1,17 @@
+{
+  "name": "ANVAYA",
+  "short_name": "ANVAYA",
+  "description": "Talk to ANVAYA. Say read this or what's in front of me.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#dfece7",
+  "theme_color": "#0f2a2e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
