@@ -20,7 +20,8 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
-# OS / editor
+# OS / editor / local agent
 .DS_Store
 *.pem
 npm-debug.log*
+.cursor/

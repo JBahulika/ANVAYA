@@ -48,7 +48,7 @@ export function MoreOptions({
       onToggle={(event) => onOpenChange(event.currentTarget.open)}
     >
       <summary className="more-summary">
-        More options · Mode: {MODE_LABELS[mode]} (demo modes)
+        More options · Mode: {MODE_LABELS[mode]}
       </summary>
 
       <div className="more-body">

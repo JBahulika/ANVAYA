@@ -3,14 +3,14 @@
 import type { AnalyzeMode } from "@/lib/api";
 
 const MODES: { id: AnalyzeMode; label: string; hint: string }[] = [
-  { id: "auto", label: "Auto", hint: "Pick the job for me" },
-  { id: "read", label: "Read", hint: "Extract text" },
-  { id: "alert", label: "Alert", hint: "Hazards first" },
+  { id: "read", label: "Read", hint: "Bills and documents" },
+  { id: "simplify", label: "Simplify", hint: "First / then / finally" },
   { id: "ask", label: "Ask", hint: "Answer a question" },
+  { id: "explain", label: "Explain", hint: "Help me understand" },
+  { id: "auto", label: "Auto", hint: "Prefer documents" },
   { id: "simple", label: "Simple", hint: "Short answer" },
   { id: "detailed", label: "Detailed", hint: "More context" },
-  { id: "explain", label: "Explain", hint: "Help me understand" },
-  { id: "simplify", label: "Simplify", hint: "Plain language" },
+  { id: "alert", label: "Alert", hint: "Later: scene cues" },
 ];
 
 type ModeSelectorProps = {

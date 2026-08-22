@@ -22,9 +22,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "ANVAYA — Talk",
+  title: "ANVAYA — Read bills and documents",
   description:
-    "Talk to ANVAYA. Say read this or what's in front of me. The camera captures and speaks what you need.",
+    "Point at a bill or form. ANVAYA speaks the amount due and deadline first.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

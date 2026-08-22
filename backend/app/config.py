@@ -18,10 +18,18 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-2.5-flash"
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     max_image_bytes: int = 8 * 1024 * 1024  # 8 MB
+    # development | production
+    environment: str = "development"
+    # Simple in-memory rate limit for /analyze (per client IP)
+    rate_limit_per_minute: int = 30
 
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment.strip().lower() == "production"
 
 
 def get_settings() -> Settings:

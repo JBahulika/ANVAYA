@@ -10,10 +10,15 @@ from google import genai
 from google.genai import types
 
 from .config import Settings
+from .document_playbook import (
+    DOCUMENT_EXPLAIN_PLAYBOOK,
+    DOCUMENT_READ_PLAYBOOK,
+    DOCUMENT_SIMPLIFY_PLAYBOOK,
+)
 from .schemas import AimHint, AnalyzeMode
 
 DISCLAIMER = (
-    "Photo is processed and not stored. Not medical advice. Not a safety system."
+    "Photo is processed and not stored. Not medical, legal, or financial advice."
 )
 
 AIM_COACHING: dict[AimHint, str] = {
@@ -21,28 +26,31 @@ AIM_COACHING: dict[AimHint, str] = {
     AimHint.move_closer: "Too far or off-frame. Move closer and tap again.",
     AimHint.more_light: "Too dark. Face a light and tap again.",
     AimHint.hold_still: "Blurry. Hold still and tap again.",
-    AimHint.no_subject: "Nothing clear in view. Point at the page or object and tap again.",
+    AimHint.no_subject: "Nothing clear in view. Point at the bill or page and tap again.",
 }
 
 SHARED_RULES = """
-You are ANVAYA, a multimodal AI accessibility copilot for people who may not see the image.
-Turn visual information into what they need to know right now — not a list of objects.
+You are ANVAYA, a reader for people who are blind or have low vision.
+Read what is actually in the photo: bill, form, letter, ticket, product label, hang tag, or object.
 
 Always follow these rules:
-1. Lead with the single most useful fact (amount, date, hazard, what it is).
-2. Keep the answer to 1–3 short spoken sentences unless the mode is detailed.
-3. If the photo is blurry, dark, too far, or empty, set aim accordingly and still share anything useful.
-4. Never give personalized medical advice or change dosage. For medicine labels, only read what is visible.
-5. Do not invent text that is not visible.
-6. Include currency, dates, names, or amounts when they matter.
-7. Do not include disclaimers; the app adds those.
-8. Do not use markdown headings.
+1. First say what it is. Then the most useful printed fact for that thing
+   (bill → amount due / date; label/tag → brand, item, size, price, care; ticket → time/place).
+2. Keep the spoken answer to 1–3 short sentences unless they asked to list everything.
+3. Never pretend a product label, hang tag, or price sticker is a bill. Do not invent amount due or due date.
+4. If the photo is blurry, dark, too far, cropped, or empty, set aim accordingly and still share anything useful.
+5. Never invent text, amounts, or dates. Never give medical, legal, or financial advice.
+6. For medicine labels and prescriptions, only read what is printed.
+7. Mask long ID and account numbers — last 4 digits only.
+8. Do not include disclaimers; the app adds those.
+9. Do not use markdown. The "text" field must be plain spoken English only — no braces, no JSON keys.
 """
 
 JSON_CONTRACT = """
 Respond with JSON only, no markdown fences:
 {
   "aim": "ok" | "move_closer" | "more_light" | "hold_still" | "no_subject",
+  "document_kind": "short snake_case type or unknown",
   "text": "spoken answer"
 }
 
@@ -51,18 +59,27 @@ aim:
 - move_closer: too far, cropped, or off-center
 - more_light: too dark to trust
 - hold_still: motion blur
-- no_subject: no readable document, object, or scene
+- no_subject: no readable document or page
+
+document_kind examples:
+utility_bill, credit_card, loan_emi, insurance, hospital_bill, rent,
+tax_notice, school_fee, subscription, receipt, invoice, payslip, cheque,
+shipping_label, product_label, clothing_tag, price_tag, ticket, appointment,
+form, official_letter, id_document, prescription, medicine_label, menu,
+contract, admit_card, other_document, not_a_document
+
+The "text" value is spoken English only. Never nest JSON inside text.
 """
 
 MODE_INSTRUCTIONS: dict[AnalyzeMode, str] = {
     AnalyzeMode.auto: """
 Mode: AUTO
-Infer the job from the image.
-If it is a document, bill, sign, label, or printed text: behave like READ (facts first).
-If it is a hallway, stairs, street, doorway, or space: behave like ALERT (orientation).
-If the user asked a question, answer that question from what is visible.
-1–3 short sentences.
-""",
+Prefer the document reader.
+If this is a bill, form, letter, ticket, ID, label, receipt, or other printed/screen text: behave exactly like READ.
+If the user asked a question, answer from what is visible.
+If it is clearly not a document (hallway, object): one sentence on what it is plus one useful fact.
+"""
+    + DOCUMENT_READ_PLAYBOOK,
     AnalyzeMode.simple: """
 Mode: SIMPLE
 Give a short, easy-to-understand answer (1–3 sentences).
@@ -88,28 +105,32 @@ Do not describe the whole scene. You are not a guaranteed safety system.
 """,
     AnalyzeMode.read: """
 Mode: READ
-Extract the important visible text.
-Lead with key facts (amounts, deadlines, titles, warnings).
-Then one brief extra line only if useful.
-Do not dump every word unless the content is short.
-""",
+This is the hero path: read a bill or document out loud, facts first.
+"""
+    + DOCUMENT_READ_PLAYBOOK,
     AnalyzeMode.ask: """
 Mode: ASK
-Answer the user's question about the image using only what you can see.
-If the answer is not visible, say so.
+Answer the user's question from the current image only. Do not invent fields.
+Match the object: bill fields only if it is a bill; label/tag fields if it is a label.
+
+SHORT answers (1–3 sentences) for a single ask: amount due, due date, how many items,
+brand, size, price, colour, care, what is this, who is it from.
+
+FULL RECITE — if they ask to list items, list everything, read everything, what is on it,
+what did you see, recite, or line by line:
+If it is a bill/receipt: issuer, each line + price, tax/fees, total, due date.
+If it is a product or clothing label: brand, product name, size, colour, price, material,
+care instructions, and any other printed lines. Do not invent bill totals.
+If a line is unreadable, say so and continue.
 """,
     AnalyzeMode.explain: """
 Mode: EXPLAIN
-Explain what the user is looking at so they understand it.
-For documents/forms: what it is, what it asks for, what matters.
-For objects/signs: purpose and key meaning.
-Keep it speakable.
-""",
+"""
+    + DOCUMENT_EXPLAIN_PLAYBOOK,
     AnalyzeMode.simplify: """
 Mode: SIMPLIFY
-Convert dense visible information into plain language.
-Use short sentences. Prefer "First / Then / Finally" for instructions.
-""",
+"""
+    + DOCUMENT_SIMPLIFY_PLAYBOOK,
 }
 
 
@@ -192,17 +213,78 @@ def _aim_from_value(value: object) -> AimHint:
     return AimHint.ok
 
 
-def parse_model_output(raw: str) -> tuple[str, AimHint]:
-    """Split a model reply into spoken text and an aim hint."""
+def _kind_from_value(value: object) -> Optional[str]:
+    if not value:
+        return None
+    kind = str(value).strip().lower().replace(" ", "_")
+    if kind in {"", "none", "null", "unknown"}:
+        return None
+    return kind
+
+
+def _recover_broken_json(raw: str) -> tuple[str, AimHint, Optional[str]]:
+    """Pull aim / kind / text out of truncated or badly escaped JSON."""
+    aim = AimHint.ok
+    kind = None
+    aim_match = re.search(r'"aim"\s*:\s*"([^"]+)"', raw)
+    if aim_match:
+        aim = _aim_from_value(aim_match.group(1))
+    kind_match = re.search(r'"document_kind"\s*:\s*"([^"]+)"', raw)
+    if kind_match:
+        kind = _kind_from_value(kind_match.group(1))
+    text_match = re.search(
+        r'"text"\s*:\s*"((?:[^"\\]|\\.)*)(?:"|$)',
+        raw,
+        re.DOTALL,
+    )
+    if text_match:
+        spoken = (
+            text_match.group(1)
+            .replace("\\n", " ")
+            .replace('\\"', '"')
+            .replace("\\t", " ")
+            .strip()
+        )
+        if spoken:
+            return spoken, aim, kind
+    return "", aim, kind
+
+
+def _looks_like_json(text: str) -> bool:
+    stripped = text.lstrip()
+    return stripped.startswith("{") and '"aim"' in stripped
+
+
+def parse_model_output(raw: str) -> tuple[str, AimHint, Optional[str]]:
+    """Split a model reply into spoken text, aim hint, and document kind."""
     data = _parse_model_json(raw)
     if data:
         text = str(data.get("text") or "").strip()
+        # Model sometimes nests the JSON contract inside text
+        if text and _looks_like_json(text):
+            nested = _parse_model_json(text)
+            if nested and nested.get("text"):
+                text = str(nested.get("text") or "").strip()
+            else:
+                recovered, _, _ = _recover_broken_json(text)
+                text = recovered or text
         aim = _aim_from_value(data.get("aim"))
-        if text:
-            return text, aim
+        kind = _kind_from_value(data.get("document_kind"))
+        if text and not _looks_like_json(text):
+            return text, aim, kind
+
+    recovered, aim, kind = _recover_broken_json(raw or "")
+    if recovered and not _looks_like_json(recovered):
+        return recovered, aim, kind
 
     fallback = (raw or "").strip()
-    return fallback, AimHint.ok
+    if _looks_like_json(fallback):
+        return (
+            "I could not finish reading that page. Hold it still and try again.",
+            AimHint.hold_still,
+            kind,
+        )
+    return fallback, AimHint.ok, None
 
 
 def analyze_image(
@@ -212,7 +294,7 @@ def analyze_image(
     question: Optional[str] = None,
     filename: Optional[str] = None,
     content_type: Optional[str] = None,
-) -> tuple[str, Optional[str], AimHint, Optional[str]]:
+) -> tuple[str, Optional[str], AimHint, Optional[str], Optional[str]]:
     if not settings.gemini_api_key:
         raise RuntimeError("GEMINI_API_KEY is not configured")
 
@@ -231,7 +313,7 @@ def analyze_image(
     ]
     config = types.GenerateContentConfig(
         temperature=0.3,
-        max_output_tokens=1024,
+        max_output_tokens=2048,
         response_mime_type="application/json",
     )
     try:
@@ -246,16 +328,16 @@ def analyze_image(
             contents=contents,
             config=types.GenerateContentConfig(
                 temperature=0.3,
-                max_output_tokens=1024,
+                max_output_tokens=2048,
             ),
         )
 
     raw = (response.text or "").strip()
-    text, aim_hint = parse_model_output(raw)
+    text, aim_hint, document_kind = parse_model_output(raw)
     if not text:
         text = (
-            "I could not produce a clear reading of this image. "
-            "Please try again with better lighting or a closer capture."
+            "I could not produce a clear reading of this page. "
+            "Move closer to the document, add light, and try again."
         )
         if aim_hint == AimHint.ok:
             aim_hint = AimHint.no_subject
@@ -264,4 +346,4 @@ def analyze_image(
     if aim_hint == AimHint.ok:
         aim_instruction = None
 
-    return text, extract_confidence_note(text), aim_hint, aim_instruction
+    return text, extract_confidence_note(text), aim_hint, aim_instruction, document_kind

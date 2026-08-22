@@ -37,6 +37,10 @@ class AnalyzeResponse(BaseModel):
     confidence_note: Optional[str] = Field(
         None, description="Uncertainty or clarity note when relevant"
     )
+    document_kind: Optional[str] = Field(
+        None,
+        description="Detected bill or document type when the model identifies one",
+    )
     disclaimer: str = Field(
         ...,
         description="Safety / responsibility disclaimer",

@@ -2,31 +2,46 @@
 
 **See → Understand → Explain → Alert**
 
-A multimodal accessibility copilot for **Prasunethon 2.0**. Point a camera at a bill, a sign, a hallway, or anything in front of you — ANVAYA turns it into clear, prioritized guidance you can **read or hear**.
+A multimodal accessibility copilot for **Prasunethon 2.0**. **First feature:** read bills and documents for people who are blind or have low vision — amount due and deadline, spoken first.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)](frontend)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](backend)
 [![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?logo=google)](backend/app/pipeline.py)
 [![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)](backend)
 
-> Pitching ANVAYA? The hackathon deck lives quietly here: **[Anvaya_Prasunethon_BEEyond.pptx](docs/Anvaya_Prasunethon_BEEyond.pptx)**
+> **Unstop submission package:** [docs/SUBMISSION.md](docs/SUBMISSION.md) · [Document reader](docs/DOCUMENT_READER.md) · [Deploy](docs/DEPLOY.md) · [Security](docs/SECURITY.md) · [Demo video script](docs/DEMO_VIDEO_SCRIPT.md) · [PPT](docs/Anvaya_Prasunethon_BEEyond.pptx)
+
+---
+
+## Production submission (Unstop)
+
+| Deliverable | Where |
+|---|---|
+| Source code | This repository |
+| Documentation | README + [`docs/`](docs/) |
+| Deployed demo | Follow [`docs/DEPLOY.md`](docs/DEPLOY.md) → Vercel + Render (HTTPS) |
+| PPT | [`docs/Anvaya_Prasunethon_BEEyond.pptx`](docs/Anvaya_Prasunethon_BEEyond.pptx) · outline [`docs/PITCH_SLIDE_OUTLINE.md`](docs/PITCH_SLIDE_OUTLINE.md) |
+| Demo video | Record using [`docs/DEMO_VIDEO_SCRIPT.md`](docs/DEMO_VIDEO_SCRIPT.md) |
+
+Evaluated on implementation, innovation, usability, scalability, performance, security, and impact — mapped in [`docs/EVALUATION_CRITERIA.md`](docs/EVALUATION_CRITERIA.md).
 
 ---
 
 ## What it does
 
-Most vision apps dump every object in a photo. ANVAYA asks a different question: **what does this person actually need to know right now?**
+Most vision apps dump every object in a photo. ANVAYA’s first product is a **bill and document reader**: point the camera, hear what you must do.
 
-**Voice-first:** tap **Talk to ANVAYA** once, then speak. The camera captures automatically.
-
-| You say… | Agent | You get… |
+| You point at… | You say or tap | You hear first |
 |---|---|---|
-| “Read this” | **Reader** | Amounts, dates, warnings from text — spoken first |
-| “What’s in front of me” | **Scene** | Hazard, clock-face, one action |
-| “Ask, what is the due date?” | **Ask** | Answer from the photo only |
-| “Help” / “Stop” | — | Command list / end session |
+| Electricity / water / mobile bill | **Read this** or **Capture & hear** | Amount due + due date |
+| Credit card / EMI / insurance | same | Amount + deadline (and minimum due if different) |
+| Letter, form, ticket, receipt | same | What it is + the ask or time |
+| Same page, denser language | **Simplify** | First / Then / Finally |
+| A specific field | **Ask, what is the amount due?** | Only that answer |
 
-**Capture & hear** remains the silent fallback if the mic fails. More options still expose every backend mode for demos.
+Document types and field order: [`docs/DOCUMENT_READER.md`](docs/DOCUMENT_READER.md).
+
+**Capture & hear** is the silent fallback if the mic fails. Scene/Alert stays in More options — not the live hero.
 
 Images stay in memory on the backend. They are never written to disk. The Gemini API key never leaves the server.
 
@@ -45,9 +60,9 @@ flowchart LR
 ```
 
 1. Tap **Talk to ANVAYA** (browser needs one gesture for mic + camera).
-2. Say **read this**, **what’s in front of me**, or **ask …**. ANVAYA maps that to Reader / Scene / Ask, captures, and speaks.
-3. If the photo is dark, blurry, or off-frame, you hear how to recapture — then whatever could still be read.
-4. Say **repeat**, **help**, or **stop**. Mic pauses while TTS speaks so the agent does not hear itself.
+2. Point at a bill. Say **read this** (or just tap **Capture & hear**). ANVAYA captures and speaks amount + due date first.
+3. If the photo is dark, blurry, or off-frame, you hear how to recapture.
+4. Say **simplify**, **ask …**, **repeat**, **help**, or **stop**.
 
 Chrome is recommended for speech recognition. Safari may be weaker on the mic.
 
@@ -57,9 +72,9 @@ Chrome is recommended for speech recognition. Safari may be weaker on the mic.
 
 | Say this | Agent | Backend mode |
 |---|---|---|
-| read this / what does this say | Reader | `read` |
-| what’s in front of me / look around / is it safe | Scene | `alert` |
-| ask, … / what is … | Ask | `ask` |
+| read this / read the bill / how much do I owe | Reader | `read` |
+| simplify / what do I do | Simplify | `simplify` |
+| ask, what is the amount due? | Ask | `ask` |
 | help | — | spoken command list |
 | repeat | — | replay last answer |
 | stop / goodbye | — | end session |
@@ -81,7 +96,7 @@ Same photo. Different job. The voice path uses Reader / Scene / Ask. Full modes 
 
 ---
 
-## Quick start
+## Quick start (local)
 
 You need two terminals and a [Gemini API key](https://aistudio.google.com/apikey).
 
@@ -115,16 +130,18 @@ Open [http://localhost:3000](http://localhost:3000). Allow camera + mic when the
 
 </details>
 
+**Production deploy:** [`docs/DEPLOY.md`](docs/DEPLOY.md) (Vercel frontend + Render Docker API).
+
 ---
 
 ## 90-second demo
 
-1. Tap **Talk to ANVAYA** → allow mic.
-2. Point at a bill → say **“Read this”** → hear amount + deadline.
-3. Point at stairs / a hallway (standing still) → say **“What’s in front of me”** → clock-face Alert + “This can miss things.”
-4. Say **“Stop.”** Optional: More options → **Simplify** → **Hear this photo again** for plain language on the same bill.
+1. Point at a printed utility bill → **Capture & hear** (or Talk → “Read this”).
+2. Hear **amount due** and **due date** in the first two seconds.
+3. Same photo → say **Simplify** or More options → Simplify → Hear this photo again.
+4. Optional: “Ask, is there a late fee?”
 
-Use **Capture & hear** if the mic fails. Chrome works best. Do not demo street crossing or a subway platform as a safety system.
+Have 2–3 real bills in the bag. If the mic fails, Capture & hear is the hero. Do not demo street crossing as a safety system.
 
 ---
 
@@ -136,7 +153,7 @@ Use **Capture & hear** if the mic fails. Chrome works best. Do not demo street c
 |---|---|
 | `image` | JPEG / PNG / WebP / GIF (max **8 MB**) |
 | `mode` | `auto` \| `simple` \| `detailed` \| `alert` \| `read` \| `ask` \| `explain` \| `simplify` |
-| `question` | optional |
+| `question` | optional (max 500 chars) |
 
 ```json
 {
@@ -145,22 +162,24 @@ Use **Capture & hear** if the mic fails. Chrome works best. Do not demo street c
   "aim_hint": "ok",
   "aim_instruction": null,
   "confidence_note": null,
-  "disclaimer": "Photo is processed and not stored. Not medical advice. Not a safety system."
+  "document_kind": "utility_bill",
+  "disclaimer": "Photo is processed and not stored. Not medical, legal, or financial advice."
 }
 ```
 
 `aim_hint` is `ok`, `move_closer`, `more_light`, `hold_still`, or `no_subject`.
 
-`GET /health` reports whether `GEMINI_API_KEY` is configured.
+`GET /health` reports whether `GEMINI_API_KEY` is configured. Rate limit: 30 requests/minute/IP by default.
 
 ---
 
-## Responsible AI
+## Responsible AI & security
 
 - **Not medical advice.** Medicine labels are read, not interpreted as prescriptions.
 - **Not a safety system.** Hazard detection can miss things — stay cautious in the real world.
 - **Not for legal decisions.** Treat readings as assistance, not a guarantee.
 - **Ephemeral by design.** Uploads are processed in RAM and discarded. The API key stays on the server.
+- **Production controls.** CORS allowlist, upload caps, rate limiting, sanitized errors when `ENVIRONMENT=production`. Details: [`docs/SECURITY.md`](docs/SECURITY.md).
 
 ---
 
@@ -168,9 +187,11 @@ Use **Capture & hear** if the mic fails. Chrome works best. Do not demo street c
 
 ```text
 ANVAYA/
-  backend/app/     FastAPI + Gemini pipeline (mode-specific prompts)
+  backend/app/     FastAPI + Gemini pipeline, rate limit, security headers
+  backend/Dockerfile
   frontend/        Next.js Talk session, camera, Web Speech agents
-  docs/            Hackathon pitch deck
+  docs/            Submission, deploy, security, demo script, pitch deck
+  render.yaml      Render blueprint for the API
 ```
 
 <details>
@@ -179,8 +200,9 @@ ANVAYA/
 | Layer | Tech |
 |---|---|
 | Frontend | Next.js 15 (App Router), React 19, camera + Web Speech voice agents |
-| Backend | FastAPI, Pydantic |
+| Backend | FastAPI, Pydantic, Docker |
 | AI | Google Gemini multimodal (`gemini-2.5-flash`), `google-genai` |
-| Voice | Browser `SpeechRecognition` + `speechSynthesis` — keyword agents, no extra library |
+| Voice | Browser `SpeechRecognition` + `speechSynthesis` — keyword agents |
+| Hosting | Vercel (UI) + Render (API) |
 
 </details>

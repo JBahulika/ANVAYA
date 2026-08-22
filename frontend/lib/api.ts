@@ -21,16 +21,48 @@ export type AnalyzeResponse = {
   aim_hint?: AimHint;
   aim_instruction?: string | null;
   confidence_note: string | null;
+  document_kind?: string | null;
   disclaimer: string;
 };
+
+export function formatDocumentKind(kind?: string | null): string | null {
+  if (!kind || kind === "unknown" || kind === "not_a_document") return null;
+  return kind.replace(/_/g, " ");
+}
+
+/** Never speak or show Gemini's JSON wrapper. */
+export function unwrapSpokenText(raw: string): string {
+  const trimmed = (raw || "").trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("{") && trimmed.includes('"text"')) {
+    try {
+      const data = JSON.parse(trimmed) as { text?: unknown };
+      if (typeof data.text === "string" && data.text.trim()) {
+        return unwrapSpokenText(data.text);
+      }
+    } catch {
+      const match = trimmed.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)/);
+      if (match?.[1]) {
+        return match[1]
+          .replace(/\\n/g, " ")
+          .replace(/\\"/g, '"')
+          .replace(/\\t/g, " ")
+          .trim();
+      }
+    }
+    return "";
+  }
+  return trimmed;
+}
 
 export function spokenAnswer(result: AnalyzeResponse): string {
   const parts: string[] = [];
   if (result.aim_hint && result.aim_hint !== "ok" && result.aim_instruction) {
     parts.push(result.aim_instruction);
   }
-  if (result.text.trim()) {
-    parts.push(result.text.trim());
+  const text = unwrapSpokenText(result.text);
+  if (text) {
+    parts.push(text);
   }
   return parts.join(" ");
 }
@@ -83,5 +115,12 @@ export async function analyzeImage(params: {
     throw new Error(detail);
   }
 
-  return res.json();
+  const payload = (await res.json()) as AnalyzeResponse;
+  const text = unwrapSpokenText(payload.text);
+  return {
+    ...payload,
+    text:
+      text ||
+      "I could not finish reading that page. Hold it still and try again.",
+  };
 }

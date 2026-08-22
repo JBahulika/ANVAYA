@@ -1,6 +1,6 @@
 "use client";
 
-import type { AnalyzeResponse } from "@/lib/api";
+import { formatDocumentKind, type AnalyzeResponse } from "@/lib/api";
 
 type ResultPanelProps = {
   result: AnalyzeResponse | null;
@@ -59,9 +59,14 @@ export function ResultPanel({
       </div>
 
       {loading && (
-        <p className="result-status">
-          Analyzing — usually under 5 seconds…
-        </p>
+        <div className="think" role="status" aria-live="polite">
+          <div className="think-rings" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <p className="result-status">Reading the page…</p>
+        </div>
       )}
 
       {error && (
@@ -72,17 +77,23 @@ export function ResultPanel({
 
       {!loading && !error && !result && (
         <p className="result-placeholder">
-          Tap Talk to ANVAYA, then say read this or what&apos;s in front of me.
+          The spoken answer will appear here as text.
         </p>
       )}
 
       {result && (
         <div className="result-body">
-          <p className="result-mode">Mode: {result.mode}</p>
+          <p className="result-mode">
+            {formatDocumentKind(result.document_kind)
+              ? `Reading: ${formatDocumentKind(result.document_kind)}`
+              : `Mode: ${result.mode}`}
+          </p>
           {needsRetry && (
             <p className="result-confidence">{result.aim_instruction}</p>
           )}
-          <p className="result-text">{result.text}</p>
+          <blockquote className="result-quote">
+            <p className="result-text">“{result.text}”</p>
+          </blockquote>
           {result.confidence_note && (
             <p className="result-confidence">{result.confidence_note}</p>
           )}
