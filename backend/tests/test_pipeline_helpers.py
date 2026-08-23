@@ -4,7 +4,8 @@ import json
 
 from app.document_playbook import DOCUMENT_READ_PLAYBOOK
 from app.pipeline import parse_model_output
-from app.rate_limit import SlidingWindowRateLimiter
+from app.image_guard import sniff_image_mime
+from app.rate_limit import AnalyzeAbuseGuard, SlidingWindowRateLimiter
 from app.schemas import AimHint
 
 
@@ -65,3 +66,19 @@ def test_rate_limiter_blocks_after_limit():
     assert limiter.allow("a") is True
     assert limiter.allow("a") is False
     assert limiter.allow("b") is True
+
+
+def test_sniff_image_mime_accepts_jpeg_and_rejects_junk():
+    jpeg = b"\xff\xd8\xff" + b"\x00" * 16
+    assert sniff_image_mime(jpeg) == "image/jpeg"
+    assert sniff_image_mime(b"not-an-image!!!!") is None
+
+
+def test_abuse_guard_blocks_after_minute_budget():
+    guard = AnalyzeAbuseGuard(
+        per_minute=2, per_hour=10, per_day=10, global_per_day=10
+    )
+    assert guard.admit("1.1.1.1") is None
+    assert guard.admit("1.1.1.1") is None
+    assert guard.admit("1.1.1.1") is not None
+    assert guard.admit("2.2.2.2") is None

@@ -23,7 +23,7 @@ export type ParsedVoiceCommand = {
 
 const HELP_TEXT =
   "Hold the page to the camera. After the beep, say what you need — what is this, how much is due, or how many items. " +
-  "I will confirm, read the page, and speak the answer. Say new bill for another page. Say stop when done.";
+  "I will confirm, read the page, and speak the answer. Say new bill for another page. Say okay bye or stop when done.";
 
 export function helpSpeech(): string {
   return HELP_TEXT;
@@ -45,11 +45,23 @@ const STOP_PHRASES = [
   "stop",
   "goodbye",
   "good bye",
+  "ok bye",
+  "okay bye",
+  "ok goodbye",
+  "okay goodbye",
+  "thank you bye",
+  "thanks bye",
   "quit",
   "end session",
   "cancel",
   "shut up",
 ];
+
+function isStopCommand(text: string): boolean {
+  if (includesAny(text, STOP_PHRASES)) return true;
+  // Catch farewells even when speech-to-text mangles them: "ok bye", "thank you bye"
+  return /\b(good\s*)?bye$/.test(text);
+}
 
 const HELP_PHRASES = [
   "help",
@@ -271,7 +283,7 @@ export function parseVoiceCommand(transcript: string): ParsedVoiceCommand {
     return { action: "unknown" };
   }
 
-  if (includesAny(text, STOP_PHRASES)) {
+  if (isStopCommand(text)) {
     return { action: "stop", label: "Stop" };
   }
 

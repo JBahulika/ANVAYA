@@ -11,13 +11,13 @@ import {
 import { enhanceDocumentCanvas } from "@/lib/enhanceCapture";
 
 export type CameraHandle = {
-  capture: () => Promise<{ blob: Blob; url: string } | null>;
+  capture: () => Promise<{ blob: Blob } | null>;
   start: () => Promise<boolean>;
   stop: () => void;
 };
 
 type CameraCaptureProps = {
-  onCapture: (blob: Blob, previewUrl: string) => void;
+  onCapture: (blob: Blob) => void;
   ref?: Ref<CameraHandle>;
 };
 
@@ -165,9 +165,8 @@ export function CameraCapture({
       enhanced.toBlob(resolve, "image/jpeg", 0.95)
     );
     if (!blob) return null;
-    const url = URL.createObjectURL(blob);
-    onCapture(blob, url);
-    return { blob, url };
+    onCapture(blob);
+    return { blob };
   }, [onCapture]);
 
   useImperativeHandle(

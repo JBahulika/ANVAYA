@@ -40,7 +40,6 @@ export default function HomePage() {
   const busyRef = useRef(false);
   const loopGenerationRef = useRef(0);
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [hasSavedBill, setHasSavedBill] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,11 +75,7 @@ export default function HomePage() {
     };
   }, []);
 
-  const storeImage = useCallback((blob: Blob, url: string) => {
-    setPreviewUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return url;
-    });
+  const storeImage = useCallback((blob: Blob) => {
     imageBlobRef.current = blob;
     setHasSavedBill(true);
   }, []);
@@ -109,6 +104,7 @@ export default function HomePage() {
     setPhase("idle");
     setStatus(farewell ? "Session ended" : "");
     stopSpeaking();
+    cameraRef.current?.stop();
     if (farewell) {
       try {
         await speak("Okay. Session ended. Tap Talk when you need me again.");
@@ -180,7 +176,6 @@ export default function HomePage() {
           return;
         }
 
-        storeImage(shot.blob, shot.url);
         playShotTakenDing();
         setPhase("analyzing");
         setStatus("Reading the page…");
@@ -203,7 +198,7 @@ export default function HomePage() {
         busyRef.current = false;
       }
     },
-    [runAnalyze, speakAndWait, storeImage]
+    [runAnalyze, speakAndWait]
   );
 
   const analyzeSaved = useCallback(
@@ -435,10 +430,10 @@ export default function HomePage() {
     const opening = imageBlobRef.current
       ? "Camera is on. Hold a page up if you need a new photo, or ask about the last one. " +
         "After the beep, say what you need — for example, what is this, how much is due, or how many items. " +
-        "Say new bill for a different page. Say stop when you are done."
+        "Say new bill for a different page. Say okay bye or stop when you are done."
       : "Camera is on. Hold your bill or document in front of the camera. " +
         "After the beep, say what you need — for example, what is this, how much is due, or how many items. " +
-        "I will capture it, read it, and speak the answer. Say stop when you are done.";
+        "I will capture it, read it, and speak the answer. Say okay bye or stop when you are done.";
 
     setSpeaking(true);
     setStatus("Instructions…");
@@ -550,14 +545,6 @@ export default function HomePage() {
             if (sessionActiveRef.current) setPhase("listening");
           }}
         />
-
-        {previewUrl && (
-          <figure className="preview">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={previewUrl} alt="" />
-            <figcaption>Last photo sent for reading</figcaption>
-          </figure>
-        )}
       </div>
 
       <footer className="safety-footer">

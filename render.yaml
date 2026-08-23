@@ -1,4 +1,4 @@
-# Render blueprint — connect repo, set GEMINI_API_KEY in the dashboard
+# Render blueprint — connect repo, set GEMINI_API_KEY and CORS_ORIGINS in the dashboard
 services:
   - type: web
     name: anvaya-api
@@ -12,7 +12,15 @@ services:
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
       - key: RATE_LIMIT_PER_MINUTE
-        value: "30"
+        value: "10"
+      - key: RATE_LIMIT_PER_HOUR
+        value: "40"
+      - key: RATE_LIMIT_PER_DAY
+        value: "100"
+      - key: GLOBAL_DAILY_ANALYZE_LIMIT
+        value: "100"
+      - key: MAX_CONCURRENT_ANALYZE
+        value: "2"
       - key: GEMINI_API_KEY
         sync: false
       - key: CORS_ORIGINS

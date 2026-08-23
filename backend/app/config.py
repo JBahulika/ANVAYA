@@ -18,10 +18,13 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-2.5-flash"
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     max_image_bytes: int = 8 * 1024 * 1024  # 8 MB
-    # development | production
     environment: str = "development"
-    # Simple in-memory rate limit for /analyze (per client IP)
-    rate_limit_per_minute: int = 30
+    rate_limit_per_minute: int = 10
+    rate_limit_per_hour: int = 40
+    rate_limit_per_day: int = 100
+    # Process-wide Gemini budget so rotating IPs cannot drain the key
+    global_daily_analyze_limit: int = 100
+    max_concurrent_analyze: int = 2
 
     @property
     def cors_origin_list(self) -> list[str]:

@@ -60,11 +60,6 @@ export function ResultPanel({
 
       {loading && (
         <div className="think" role="status" aria-live="polite">
-          <div className="think-rings" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
           <p className="result-status">Reading the page…</p>
         </div>
       )}
