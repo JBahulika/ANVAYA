@@ -133,7 +133,7 @@ function speakOnce(
     let settled = false;
     let started = false;
     let lastError: string | undefined;
-    let resumeTick: ReturnType<typeof setInterval> | null = null;
+    let resumeTick: number | null = null;
 
     const finish = (reason: SpeakOutcome) => {
       if (settled) return;
