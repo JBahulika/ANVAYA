@@ -8,7 +8,7 @@ Camera and microphone **need HTTPS** (or localhost). A phone will not get camera
 Phone / laptop (HTTPS)
     → Vercel (Next.js)
         → Render (FastAPI + GEMINI_API_KEY)
-            → Google Gemini 2.5 Flash
+            → Google Gemini 3.6 Flash
 ```
 
 ## 1. Backend — Render (Docker)
@@ -22,7 +22,7 @@ Phone / laptop (HTTPS)
 | Key | Value |
 |---|---|
 | `GEMINI_API_KEY` | from [Google AI Studio](https://aistudio.google.com/apikey) |
-| `GEMINI_MODEL` | `gemini-2.5-flash` |
+| `GEMINI_MODEL` | `gemini-3.6-flash` |
 | `ENVIRONMENT` | `production` |
 | `CORS_ORIGINS` | exact Vercel origin, e.g. `https://anvaya.vercel.app` (no trailing slash) |
 | `RATE_LIMIT_PER_MINUTE` | `10` |

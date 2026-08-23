@@ -8,6 +8,7 @@ from typing import Optional
 
 from google import genai
 from google.genai import types
+from google.genai.errors import ClientError
 
 from .config import Settings
 from .document_playbook import (
@@ -20,6 +21,51 @@ from .schemas import AimHint, AnalyzeMode
 DISCLAIMER = (
     "Photo is processed and not stored. Not medical, legal, or financial advice."
 )
+
+
+def _client_error_code(exc: ClientError) -> int:
+    code = getattr(exc, "code", None)
+    return int(code) if code is not None else 0
+
+
+def gemini_error_detail(exc: Exception) -> tuple[int, str] | None:
+    """Map Gemini client errors to HTTP status and a spoken-safe message."""
+    if isinstance(exc, ClientError):
+        code = _client_error_code(exc)
+        if code == 429:
+            return (
+                429,
+                "Google Gemini daily limit reached for this model on the free tier "
+                "(about 20 requests per day). Wait until tomorrow, enable billing in "
+                "Google AI Studio, or create a key from a different Google account.",
+            )
+        if code == 404:
+            return (
+                503,
+                "This Gemini model is not available on your API key. Set "
+                "GEMINI_MODEL=gemini-3.6-flash in backend/.env and restart the backend.",
+            )
+        if code in (401, 403):
+            return (
+                503,
+                "Gemini API key rejected. Create a key at Google AI Studio and set "
+                "GEMINI_API_KEY in backend/.env, then restart the backend.",
+            )
+    text = str(exc)
+    if "RESOURCE_EXHAUSTED" in text or "quota" in text.lower():
+        return (
+            429,
+            "Google Gemini quota exceeded. Free tier is about 20 requests per day per "
+            "model. Try again tomorrow or enable billing at aistudio.google.com.",
+        )
+    if "no longer available" in text.lower() or "NOT_FOUND" in text:
+        return (
+            503,
+            "This Gemini model is not available. Set GEMINI_MODEL=gemini-3.6-flash "
+            "in backend/.env and restart the backend.",
+        )
+    return None
+
 
 AIM_COACHING: dict[AimHint, str] = {
     AimHint.ok: "",
@@ -322,7 +368,15 @@ def analyze_image(
             contents=contents,
             config=config,
         )
-    except Exception:
+    except Exception as first_err:
+        # Do not retry quota, auth, or missing-model errors — wastes API calls.
+        if isinstance(first_err, ClientError) and _client_error_code(first_err) in (
+            404,
+            429,
+            401,
+            403,
+        ):
+            raise
         response = client.models.generate_content(
             model=settings.gemini_model,
             contents=contents,

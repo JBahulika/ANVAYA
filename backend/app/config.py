@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     )
 
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.6-flash"
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     max_image_bytes: int = 8 * 1024 * 1024  # 8 MB
     environment: str = "development"

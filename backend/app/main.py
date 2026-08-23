@@ -14,7 +14,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from .config import get_settings
 from .image_guard import ALLOWED_MIME_TYPES, sniff_image_mime
-from .pipeline import DISCLAIMER, analyze_image
+from .pipeline import DISCLAIMER, analyze_image, gemini_error_detail
 from .rate_limit import AnalyzeAbuseGuard
 from .schemas import AnalyzeMode, AnalyzeResponse, HealthResponse
 
@@ -195,6 +195,10 @@ async def analyze(
             raise
         except Exception as exc:  # noqa: BLE001 — surface Gemini/network errors cleanly
             logger.exception("Vision analysis failed")
+            mapped = gemini_error_detail(exc)
+            if mapped:
+                status_code, detail = mapped
+                raise HTTPException(status_code=status_code, detail=detail) from exc
             detail = (
                 "Vision analysis failed. Please try again."
                 if cfg.is_production

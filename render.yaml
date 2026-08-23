@@ -10,7 +10,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-3.6-flash
       - key: RATE_LIMIT_PER_MINUTE
         value: "10"
       - key: RATE_LIMIT_PER_HOUR
