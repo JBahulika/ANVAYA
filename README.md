@@ -10,15 +10,10 @@ Point the camera at a bill or letter, ask what you need, and hear the answer.
 <br />
 
 [![Live Demo](https://img.shields.io/badge/%F0%9F%9A%80_Live_Demo-anvaya--ten.vercel.app-6B4F9A?style=for-the-badge)](https://anvaya-ten.vercel.app)
-[![API](https://img.shields.io/badge/API-anvaya--api.onrender.com-009688?style=for-the-badge)](https://anvaya-api.onrender.com/health)
 
 <br />
 
 <img src="docs/assets/anvaya-hero.jpg" alt="ANVAYA — scan a bill, ask by voice, hear the answer" width="420" />
-
-<br />
-
-<img src="docs/assets/flow.svg" alt="Show → Ask → Hear" width="640" />
 
 </div>
 
@@ -34,18 +29,16 @@ ANVAYA answers in the order that matters:
 2. **How much is due?**
 3. **When is the deadline?**
 
-Built for **Prasunethon 2.0** · Next.js + FastAPI + Gemini
+Built for **Prasunethon 2.0** · Next.js + FastAPI + LLM
 
 ---
 
-## Try it (60 seconds)
+## Try it
 
-1. Open **[anvaya-ten.vercel.app](https://anvaya-ten.vercel.app)** on Chrome (phone or laptop).
-2. Tap **Talk** → allow camera + mic.
-3. Hold a bill to the camera → say **“What is this?”**
-4. Hear **amount due + due date** first.
-5. Ask a follow-up (**“How much is due?”**) — same photo, no recapture.
-6. Say **“Okay bye”** to end.
+1. Open **[anvaya-ten.vercel.app](https://anvaya-ten.vercel.app)** on Chrome.
+2. Tap **Talk** and allow camera + mic.
+3. Hold a bill to the camera and ask what you need.
+4. Listen to ANVAYA respond — then ask a follow-up if you want.
 
 > Needs **HTTPS** for camera/mic. Use Chrome for the best Talk experience.
 
@@ -53,22 +46,15 @@ Built for **Prasunethon 2.0** · Next.js + FastAPI + Gemini
 
 ## How it works
 
-```mermaid
-flowchart LR
-  A[Talk] --> B[Listen]
-  B --> C[Capture]
-  C --> D[Gemini]
-  D --> E[Speak]
-  E --> B
-```
+**Talk → Capture → LLM → Speak**
 
 | Layer | Stack |
 |---|---|
-| UI | Next.js · camera · Web Speech (offline voice commands) |
-| API | FastAPI · rate limits · ephemeral image handling |
-| AI | Google Gemini 3.6 Flash |
+| UI | Next.js · camera · voice |
+| API | FastAPI |
+| AI | Vision-language LLM |
 
-Photos stay in memory only. The Gemini key never leaves the server.
+Photos stay in memory only. API keys never leave the server.
 
 ---
 
@@ -76,10 +62,9 @@ Photos stay in memory only. The Gemini key never leaves the server.
 
 | You say | ANVAYA does |
 |---|---|
-| “What is this?” / “Read the bill” | Captures and reads the page |
-| “How much is due?” | Answers from the last photo |
-| “Simplify” | Plain steps: first / then / finally |
-| “Okay bye” | Ends the session |
+| “What is this?” / “Read the bill” | Reads the page out loud |
+| “How much is due?” | Answers your question |
+| “Simplify” | Explains in plain steps |
 
 ---
 
@@ -89,7 +74,7 @@ Photos stay in memory only. The Gemini key never leaves the server.
 # Backend
 cd backend && python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # add GEMINI_API_KEY
+cp .env.example .env   # add your LLM API key
 uvicorn app.main:app --reload --port 8000
 
 # Frontend (new terminal)
