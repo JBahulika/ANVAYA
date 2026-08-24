@@ -2,7 +2,7 @@
 
 # ANVAYA
 
-<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=22&duration=2800&pause=900&color=6B4F9A&center=true&vCenter=true&width=560&lines=Point.+Ask.+Understand.;Understanding%2C+not+just+descriptions.;Vision+%2B+voice+for+what+matters." alt="Point. Ask. Understand." />
+<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=22&duration=2800&pause=900&color=6B4F9A&center=true&vCenter=true&width=560&lines=Point.+Ask.+Understand.;Guided+answers.;Vision+%2B+voice+for+what+matters." alt="Point. Ask. Understand." />
 
 **A voice-first reader for people who are blind or have low vision.**  
 Point the camera at a bill or letter, ask what you need, and hear the answer.
