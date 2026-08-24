@@ -2,7 +2,7 @@
 
 # ANVAYA
 
-<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=22&duration=2800&pause=900&color=6B4F9A&center=true&vCenter=true&width=560&lines=See+%E2%86%92+Understand+%E2%86%92+Explain;Bills+spoken+out+loud;Amount+due+first.+Deadline+next." alt="See → Understand → Explain" />
+<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=22&duration=2800&pause=900&color=6B4F9A&center=true&vCenter=true&width=560&lines=Point.+Ask.+Understand.;Understanding%2C+not+just+descriptions.;Vision+%2B+voice+for+what+matters." alt="Point. Ask. Understand." />
 
 **A voice-first reader for people who are blind or have low vision.**  
 Point the camera at a bill or letter, ask what you need, and hear the answer.
@@ -25,13 +25,13 @@ Point the camera at a bill or letter, ask what you need, and hear the answer.
 
 ## Why it exists
 
-Most AI vision apps describe *everything* in a photo. That is noise when you cannot see the page in your hand.
+ANVAYA turns visual information into **understanding, not just descriptions**.
 
-ANVAYA answers in the order that matters:
+From **bills and documents to everyday objects**, it uses vision and voice so people can identify what is in front of them, ask natural questions, and hear the details that matter first.
 
-1. **What is this?**
-2. **How much is due?**
-3. **When is the deadline?**
+Instead of listing everything in an image, ANVAYA stays focused on one simple experience:
+
+**Point. Ask. Understand.**
 
 Built for **Prasunethon 2.0**
 
