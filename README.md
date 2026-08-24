@@ -19,6 +19,16 @@ Point the camera at a bill or letter, ask what you need, and hear the answer.
 
 ---
 
+## Links for judges
+
+| | |
+|---|---|
+| **Live app** | [anvaya-ten.vercel.app](https://anvaya-ten.vercel.app) |
+| **Pitch deck** | [`docs/Anvaya_Prasunethon_BEEyond.pptx`](docs/Anvaya_Prasunethon_BEEyond.pptx) |
+| **Demo video** | _Add your video URL here_ |
+
+---
+
 ## Why it exists
 
 Most AI vision apps describe *everything* in a photo. That is noise when you cannot see the page in your hand.
@@ -29,7 +39,7 @@ ANVAYA answers in the order that matters:
 2. **How much is due?**
 3. **When is the deadline?**
 
-Built for **Prasunethon 2.0** · Next.js + FastAPI + LLM
+Built for **Prasunethon 2.0**
 
 ---
 
@@ -48,13 +58,14 @@ Built for **Prasunethon 2.0** · Next.js + FastAPI + LLM
 
 **Talk → Capture → LLM → Speak**
 
-| Layer | Stack |
+| Layer | Stack (what we actually use) |
 |---|---|
-| UI | Next.js · camera · voice |
-| API | FastAPI |
-| AI | Vision-language LLM |
+| **Frontend** | **Next.js 15.2.8** (App Router) · **React 19** · **TypeScript** · browser **camera** (`getUserMedia`) · **Web Speech API** for listen + speak |
+| **Backend** | **Python 3.12** · **FastAPI 0.115** · **Uvicorn** · **Pydantic 2** · Docker on **Render** |
+| **LLM** | **Google Gemini 3.6 Flash** (`gemini-3.6-flash`) via the **Google GenAI API** (`google-genai` Python SDK **1.14.0**) — multimodal: image + question → spoken answer |
+| **Hosting** | Frontend on **Vercel** · API on **Render** (`render.yaml` + `backend/Dockerfile`) |
 
-Photos stay in memory only. API keys never leave the server.
+Photos stay in memory only. API keys stay on the server and never go to the browser.
 
 ---
 
@@ -74,7 +85,7 @@ Photos stay in memory only. API keys never leave the server.
 # Backend
 cd backend && python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # add your LLM API key
+cp .env.example .env   # set GEMINI_API_KEY
 uvicorn app.main:app --reload --port 8000
 
 # Frontend (new terminal)
@@ -82,8 +93,6 @@ cd frontend
 echo 'NEXT_PUBLIC_API_URL=http://localhost:8000' > .env.local
 npm install && npm run dev
 ```
-
-Deploy notes: [`docs/DEPLOY.md`](docs/DEPLOY.md) · Security: [`docs/SECURITY.md`](docs/SECURITY.md)
 
 ---
 
