@@ -70,6 +70,10 @@ export function spokenAnswer(result: AnalyzeResponse): string {
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:8000";
 
+export function apiBaseUrl(): string {
+  return API_URL;
+}
+
 export async function checkHealth(): Promise<{
   status: string;
   gemini_configured: boolean;

@@ -5,6 +5,7 @@ import { CameraCapture, type CameraHandle } from "@/components/CameraCapture";
 import { ResultPanel } from "@/components/ResultPanel";
 import {
   analyzeImage,
+  apiBaseUrl,
   checkHealth,
   spokenAnswer,
   type AnalyzeMode,
@@ -477,8 +478,10 @@ export default function HomePage() {
 
       {backendReady === false && (
         <p className="banner" role="status">
-          Backend offline or missing GEMINI_API_KEY. Start FastAPI and add your
-          key to backend/.env
+          {typeof window !== "undefined" &&
+          !/localhost|127\.0\.0\.1/.test(window.location.hostname)
+            ? `Cannot reach the API at ${apiBaseUrl()}. On Vercel, set NEXT_PUBLIC_API_URL to your Render URL. On Render, set CORS_ORIGINS to ${window.location.origin}.`
+            : "Backend offline or missing GEMINI_API_KEY. Start FastAPI and add your key to backend/.env"}
         </p>
       )}
 
