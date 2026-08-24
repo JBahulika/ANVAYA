@@ -9,23 +9,17 @@ Point the camera at a bill or letter, ask what you need, and hear the answer.
 
 <br />
 
-[![Live Demo](https://img.shields.io/badge/%F0%9F%9A%80_Live_Demo-anvaya--ten.vercel.app-6B4F9A?style=for-the-badge)](https://anvaya-ten.vercel.app)
+<img src="docs/assets/anvaya-hero.jpg" alt="ANVAYA — scan a bill, ask by voice, hear the answer" width="420" />
 
 <br />
 
-<img src="docs/assets/anvaya-hero.jpg" alt="ANVAYA — scan a bill, ask by voice, hear the answer" width="420" />
+[![Documentation](https://img.shields.io/badge/1·_Documentation-DOCUMENTATION.md-6B4F9A?style=for-the-badge)](DOCUMENTATION.md)
+[![PPT](https://img.shields.io/badge/2·_PPT-Pitch_deck-8B6BB8?style=for-the-badge)](https://docs.google.com/presentation/d/1DGqHD5kImMCXFhliKshx4MAnHGbUTkPGToibX5Bqw6I/edit?slide=id.p2#slide=id.p2)
+[![Demo Video](https://img.shields.io/badge/3·_Demo_Video-Watch-E67E22?style=for-the-badge)](https://drive.google.com/file/d/1AjD0TvVreUNcRiL3qPvhTajvYQxl4rgo/view?usp=share_link)
+[![Source Code](https://img.shields.io/badge/4·_Source_Code-GitHub-24292F?style=for-the-badge)](https://github.com/JBahulika/ANVAYA)
+[![Deployment](https://img.shields.io/badge/5·_Deployment-Live_app-2E8B57?style=for-the-badge)](https://anvaya-ten.vercel.app)
 
 </div>
-
----
-
-## Links for judges
-
-| | |
-|---|---|
-| **Live app** | [anvaya-ten.vercel.app](https://anvaya-ten.vercel.app) |
-| **Pitch deck** | [`docs/Anvaya_Prasunethon_BEEyond.pptx`](docs/Anvaya_Prasunethon_BEEyond.pptx) |
-| **Demo video** | _Add your video URL here_ |
 
 ---
 
@@ -66,6 +60,8 @@ Built for **Prasunethon 2.0**
 | **Hosting** | Frontend on **Vercel** · API on **Render** (`render.yaml` + `backend/Dockerfile`) |
 
 Photos stay in memory only. API keys stay on the server and never go to the browser.
+
+Full write-up: [`DOCUMENTATION.md`](DOCUMENTATION.md)
 
 ---
 
