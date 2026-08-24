@@ -13,11 +13,11 @@ Point the camera at a bill or letter, ask what you need, and hear the answer.
 
 <br />
 
-[![Documentation](https://img.shields.io/badge/1·_Documentation-DOCUMENTATION.md-6B4F9A?style=for-the-badge)](DOCUMENTATION.md)
-[![PPT](https://img.shields.io/badge/2·_PPT-Pitch_deck-8B6BB8?style=for-the-badge)](https://docs.google.com/presentation/d/1DGqHD5kImMCXFhliKshx4MAnHGbUTkPGToibX5Bqw6I/edit?slide=id.p2#slide=id.p2)
-[![Demo Video](https://img.shields.io/badge/3·_Demo_Video-Watch-E67E22?style=for-the-badge)](https://drive.google.com/file/d/1AjD0TvVreUNcRiL3qPvhTajvYQxl4rgo/view?usp=share_link)
-[![Source Code](https://img.shields.io/badge/4·_Source_Code-GitHub-24292F?style=for-the-badge)](https://github.com/JBahulika/ANVAYA)
-[![Deployment](https://img.shields.io/badge/5·_Deployment-Live_app-2E8B57?style=for-the-badge)](https://anvaya-ten.vercel.app)
+**1. Documentation** — [DOCUMENTATION.md](DOCUMENTATION.md)  
+**2. PPT** — [Pitch deck (Google Slides)](https://docs.google.com/presentation/d/1DGqHD5kImMCXFhliKshx4MAnHGbUTkPGToibX5Bqw6I/edit?slide=id.p2#slide=id.p2)  
+**3. Demo video** — [Watch on Google Drive](https://drive.google.com/file/d/1AjD0TvVreUNcRiL3qPvhTajvYQxl4rgo/view?usp=share_link)  
+**4. Source code** — [github.com/JBahulika/ANVAYA](https://github.com/JBahulika/ANVAYA)  
+**5. Deployment** — [anvaya-ten.vercel.app](https://anvaya-ten.vercel.app)
 
 </div>
 
